@@ -1581,62 +1581,60 @@
                     Empecemos · Solicita una propuesta para tu mercado. · Cuéntanos sobre tu operación y volvemos con un modelo comercial ajustado a tu licencia, geo y canales. Sin demo genérica. · Solicitar una propuesta.
                 </p>
             </div>
-            <form class="form-card" id="leadForm" novalidate>
-                <form class="form-card" id="contactForm">
-                    <p class="fh">Obtener acceso</p>
-                    <div class="form-grid">
-                        <div class="form-field">
-                            <label for="name" class="form-l">Nombre*</label>
-                            <input id="name" name="name" type="text" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="phone" class="form-l">Teléfono*</label>
-                            <input id="phone" type="tel" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="email" class="form-l">Correo electrónico*</label>
-                            <input id="email" name="email_from" type="email" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="city" class="form-l">Ciudad</label>
-                            <input id="city" name="city" type="text">
-                        </div>
-                        <div class="form-field">
-                            <label for="company" class="form-l">Empresa*</label>
-                            <input id="company" name="partner_name" type="text" required>
-                        </div>
-                        <div class="form-field">
-                            <label for="subject" class="form-l">Asunto*</label>
-                            <input id="subject" name="subject" type="text" required>
-                        </div>
-                        <div class="form-field textarea">
-                            <label style="display: none" for="description" class="form-l"></label>
-                            <textarea id="description" name="description" required placeholder="¿De qué quieres hablar?*"></textarea>
-                        </div>
-                        <div id="message">Lead creado con ID</div>
+            <form class="form-card" id="contactForm">
+                <p class="fh">Obtener acceso</p>
+                <div class="form-grid">
+                    <div class="form-field">
+                        <label for="name" class="form-l">Nombre*</label>
+                        <input id="name" name="name" type="text" required>
                     </div>
-                    <div class="fg-full">
-                        <label class="consent"
-                        ><input type="checkbox" id="consent" required aria-required="true"/><span
-                        >Acepto que Playbex se ponga en contacto conmigo sobre esta consulta.
+                    <div class="form-field">
+                        <label for="phone" class="form-l">Teléfono*</label>
+                        <input id="phone" type="tel" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="email" class="form-l">Correo electrónico*</label>
+                        <input id="email" name="email_from" type="email" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="city" class="form-l">Ciudad</label>
+                        <input id="city" name="city" type="text">
+                    </div>
+                    <div class="form-field">
+                        <label for="company" class="form-l">Empresa*</label>
+                        <input id="company" name="partner_name" type="text" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="subject" class="form-l">Asunto*</label>
+                        <input id="subject" name="subject" type="text" required>
+                    </div>
+                    <div class="form-field textarea">
+                        <label style="display: none" for="description" class="form-l"></label>
+                        <textarea id="description" name="description" required placeholder="¿De qué quieres hablar?*"></textarea>
+                    </div>
+                    <div id="message">Lead creado con ID</div>
+                </div>
+                <div class="fg-full">
+                    <label class="consent"
+                    ><input type="checkbox" id="consent" required aria-required="true"/><span
+                    >Acepto que Playbex se ponga en contacto conmigo sobre esta consulta.
                     <a href="https://playbex.com/privacy.html" target="_blank" rel="noopener"
                     >Política de privacidad</a
                     ></span
-                        ></label
-                        >
-                    </div>
-                    <div class="hp" aria-hidden="true">
-                        <label
-                        >Company URL<input type="text" name="company_url" tabindex="-1" autocomplete="off"
-                        /></label>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn dark" type="submit" id="submitBtn">Solicitar acceso</button>
-                    </div>
-                    <div class="error" id="error" role="alert">
-                        No pudimos enviar tu solicitud — inténtalo de nuevo o escríbenos usando el botón.
-                    </div>
-                </form>
+                    ></label
+                    >
+                </div>
+                <div class="hp" aria-hidden="true">
+                    <label
+                    >Company URL<input type="text" name="company_url" tabindex="-1" autocomplete="off"
+                    /></label>
+                </div>
+                <div class="form-actions">
+                    <button class="btn dark" type="submit" id="submitBtn">Solicitar acceso</button>
+                </div>
+                <div class="error" id="error" role="alert">
+                    No pudimos enviar tu solicitud — inténtalo de nuevo o escríbenos usando el botón.
+                </div>
             </form>
         </div>
     </section>
@@ -1670,7 +1668,6 @@
         </svg>
         <p class="popup-title">Solicitação enviada!</p>
         <p class="popup-text">Gracias, te enviaremos el acceso al data room en breve.</p>
-        <button class="popup-close" id="popupClose">Entendi</button>
     </div>
 </div>
 <noscript
