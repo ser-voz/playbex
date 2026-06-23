@@ -919,6 +919,68 @@
             transform: none !important;
         }
 
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-overlay.show {
+            display: flex;
+        }
+
+        .popup-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 48px 40px 40px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            animation: popup-in 0.3s ease;
+        }
+
+        @keyframes popup-in {
+            from { opacity: 0; transform: scale(0.85); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* SVG checkmark */
+        .checkmark-circle {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 24px;
+        }
+
+        .checkmark-circle circle {
+            fill: none;
+            stroke: #22c55e;
+            stroke-width: 3;
+            stroke-dasharray: 220;
+            stroke-dashoffset: 220;
+            animation: draw-circle 0.5s ease forwards;
+        }
+
+        .checkmark-circle path {
+            fill: none;
+            stroke: #22c55e;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 60;
+            stroke-dashoffset: 60;
+            animation: draw-check 0.4s ease 0.4s forwards;
+        }
+
+        @keyframes draw-circle {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes draw-check {
+            to { stroke-dashoffset: 0; }
+        }
+
         .popup-title {
             font-size: 20px;
             font-weight: 600;
