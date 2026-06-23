@@ -922,6 +922,29 @@
             cursor: default;
             transform: none !important;
         }
+        .popup-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+        .popup-text {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 28px;
+        }
+        .popup-close {
+            cursor: pointer;
+            padding: 10px 28px;
+            border-radius: 8px;
+            border: none;
+            background: #111;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .popup-close:hover {
+            opacity: 0.85;
+        }
     </style>
 </head>
 <body>
@@ -1501,32 +1524,32 @@
                     <p class="fh">Obtener acceso</p>
                     <div class="form-grid">
                         <div class="form-field">
-                            <label for="name" class="form-l">Nombre</label>
+                            <label for="name" class="form-l">Nombre*</label>
                             <input id="name" name="name" type="text" required>
                         </div>
                         <div class="form-field">
-                            <label for="phone" class="form-l">Teléfono</label>
-                            <input id="phone" type="tel">
+                            <label for="phone" class="form-l">Teléfono*</label>
+                            <input id="phone" type="tel" required>
                         </div>
                         <div class="form-field">
-                            <label for="email" class="form-l">Correo electrónico</label>
-                            <input id="email" name="email_from" type="email">
+                            <label for="email" class="form-l">Correo electrónico*</label>
+                            <input id="email" name="email_from" type="email" required>
                         </div>
                         <div class="form-field">
                             <label for="city" class="form-l">Ciudad</label>
                             <input id="city" name="city" type="text">
                         </div>
                         <div class="form-field">
-                            <label for="company" class="form-l">Empresa</label>
-                            <input id="company" name="partner_name" type="text">
+                            <label for="company" class="form-l">Empresa*</label>
+                            <input id="company" name="partner_name" type="text" required>
                         </div>
                         <div class="form-field">
-                            <label for="subject" class="form-l">Asunto</label>
-                            <input id="subject" name="subject" type="text">
+                            <label for="subject" class="form-l">Asunto*</label>
+                            <input id="subject" name="subject" type="text" required>
                         </div>
                         <div class="form-field textarea">
                             <label style="display: none" for="description" class="form-l"></label>
-                            <textarea id="description" name="description" placeholder="¿De qué quieres hablar?"></textarea>
+                            <textarea id="description" name="description" required placeholder="¿De qué quieres hablar?*"></textarea>
                         </div>
                         <div id="message">Lead creado con ID</div>
                     </div>
@@ -1547,14 +1570,6 @@
                     </div>
                     <div class="form-actions">
                         <button class="btn dark" type="submit" id="submitBtn">Solicitar acceso</button>
-                        <a class="btn ghost"
-                        id="mailFallback"
-                        href="mailto:contact@playbex.com"
-                        style="display: none; color: var(--on-cream); border-color: var(--line-cream)"
-                        >Escribir a Playbex</a>
-                    </div>
-                    <div class="success" id="success" role="status">
-                        Gracias, te enviaremos el acceso al data room en breve.
                     </div>
                     <div class="error" id="error" role="alert">
                         No pudimos enviar tu solicitud — inténtalo de nuevo o escríbenos usando el botón.
@@ -1585,6 +1600,17 @@
         </div>
     </div>
 </footer>
+<div class="popup-overlay" id="successPopup">
+    <div class="popup-box">
+        <svg class="checkmark-circle" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="36" cy="36" r="33"/>
+            <path d="M20 37l11 11 21-21"/>
+        </svg>
+        <p class="popup-title">Solicitação enviada!</p>
+        <p class="popup-text">Gracias, te enviaremos el acceso al data room en breve.</p>
+        <button class="popup-close" id="popupClose">Entendi</button>
+    </div>
+</div>
 <noscript
 ><div
         style="
@@ -1616,69 +1642,98 @@
     }
   });
 
-  const form = document.getElementById("contactForm");
-  const baseUrl = "https://betgolperu.com";
-  const msgBox = document.getElementById("message");
-  const mailFallback = document.getElementById("mailFallback");
-
-  const MAIL_TO = "contact@betgolperu.com";
-  const MAIL_SUBJECT = "Betgol Peru — lead form";
-
-  form.addEventListener("submit", async (e) => {
+  document.getElementById('contactForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    if (form.company_url.value) return;
+    const form        = e.target;
+    const submitBtn   = document.getElementById('submitBtn');
+    const successEl   = document.getElementById('success');
+    const errorEl     = document.getElementById('error');
 
-    msgBox.style.display = "none";
-    if (mailFallback) mailFallback.style.display = "none";
+    if (form.querySelector('[name="company_url"]').value) return;
 
-    const fd = new FormData(form);
-    const payload = Object.fromEntries(fd.entries());
-    delete payload.company_url;
+    successEl.style.display = 'none';
+    errorEl.style.display   = 'none';
 
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", "Bearer 40358e2f8e0468e8e0cdc3089483055f7b93a906");
+    const nameInput    = document.getElementById('name');
+    const emailInput   = document.getElementById('email');
+    const subjectInput = document.getElementById('subject');
+    const consentInput = document.getElementById('consent');
+    const consentLabel = consentInput.closest('label');
 
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(payload),
-      redirect: "follow"
+    let valid = true;
+
+    function mark(el, isValid) {
+      el.style.outline = isValid ? '' : '2px solid red';
+    }
+
+    const nameOk    = nameInput.value.trim() !== '';
+    const emailOk   = emailInput.value.trim() !== '' && emailInput.value.includes('@');
+    const subjectOk = subjectInput.value.trim() !== '';
+    const consentOk = consentInput.checked;
+
+    mark(nameInput, nameOk);
+    mark(emailInput, emailOk);
+    mark(subjectInput, subjectOk);
+    if (consentLabel) consentLabel.style.outline = consentOk ? '' : '2px solid red';
+
+    if (!nameOk)    { nameInput.focus();    valid = false; }
+    else if (!emailOk)   { emailInput.focus();   valid = false; }
+    else if (!subjectOk) { subjectInput.focus(); valid = false; }
+
+    if (!consentOk) valid = false;
+    if (!valid) return;
+
+    const payload = {
+      access_key:      'b4b2d8ee-166d-4ede-bc76-7e9c90cb8b8c',
+      subject:         'New Playbex lead',
+      name:            nameInput.value.trim(),
+      email:           emailInput.value.trim(),
+      phone:           document.getElementById('phone').value.trim(),
+      city:            document.getElementById('city').value.trim(),
+      company:         document.getElementById('company').value.trim(),
+      inquiry_subject: subjectInput.value.trim(),
+      description:     document.getElementById('description').value.trim(),
+      consent:         true,
+      page_url:        location.href,
+      referrer:        document.referrer || '',
+      submitted_at:    new Date().toISOString(),
     };
 
+    submitBtn.dataset.originalText = submitBtn.textContent;
+    submitBtn.disabled             = true;
+    submitBtn.textContent          = 'Sending…';
+
     try {
-      const response = await fetch(baseUrl + "/util/crm/lead", requestOptions);
-      const data = await response.json().catch(() => ({}));
-      const result = data.result || data;
+      const res  = await fetch('https://api.web3forms.com/submit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const json = await res.json();
 
-      msgBox.style.display = "block";
-
-      if (result.ok) {
+      if (res.ok && json.success) {
         form.reset();
-        window.location.href = "/thanks.html";
+        mark(nameInput, true);
+        mark(emailInput, true);
+        mark(subjectInput, true);
+        if (consentLabel) consentLabel.style.outline = '';
+
+        const popup = document.getElementById('successPopup');
+        popup.classList.add('show');
+
+        setTimeout(() => popup.classList.remove('show'), 3000);
       } else {
-        msgBox.className = "error";
-        msgBox.textContent = `❌ Error: ${result.error || "No se pudo enviar"}`;
-        showMailFallback(payload);
+        throw new Error(json.message || 'API error');
       }
     } catch (err) {
-      msgBox.style.display = "block";
-      msgBox.className = "error";
-      msgBox.textContent = "❌ Error de conexión con el servidor";
-      showMailFallback(payload);
       console.error(err);
+      errorEl.style.display = 'block';
+    } finally {
+      submitBtn.disabled    = false;
+      submitBtn.textContent = submitBtn.dataset.originalText;
     }
   });
-
-  function showMailFallback(payload) {
-    if (!mailFallback) return;
-    mailFallback.href =
-      "mailto:" + MAIL_TO +
-      "?subject=" + encodeURIComponent(MAIL_SUBJECT) +
-      "&body=" + encodeURIComponent(JSON.stringify(payload, null, 2));
-    mailFallback.style.display = "inline-flex";
-  }
 </script>
 </body>
 </html>

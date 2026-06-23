@@ -1090,6 +1090,92 @@
             cursor: default;
             transform: none !important;
         }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .popup-overlay.show {
+            display: flex;
+        }
+
+        .popup-box {
+            background: #fff;
+            border-radius: 16px;
+            padding: 48px 40px 40px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            animation: popup-in 0.3s ease;
+        }
+
+        @keyframes popup-in {
+            from { opacity: 0; transform: scale(0.85); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* SVG checkmark */
+        .checkmark-circle {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 24px;
+        }
+
+        .checkmark-circle circle {
+            fill: none;
+            stroke: #22c55e;
+            stroke-width: 3;
+            stroke-dasharray: 220;
+            stroke-dashoffset: 220;
+            animation: draw-circle 0.5s ease forwards;
+        }
+
+        .checkmark-circle path {
+            fill: none;
+            stroke: #22c55e;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-dasharray: 60;
+            stroke-dashoffset: 60;
+            animation: draw-check 0.4s ease 0.4s forwards;
+        }
+
+        @keyframes draw-circle {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes draw-check {
+            to { stroke-dashoffset: 0; }
+        }
+
+        .popup-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+        .popup-text {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 28px;
+        }
+        .popup-close {
+            cursor: pointer;
+            padding: 10px 28px;
+            border-radius: 8px;
+            border: none;
+            background: #111;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .popup-close:hover {
+            opacity: 0.85;
+        }
+
     </style>
 </head>
 <body>
@@ -1653,32 +1739,32 @@
                 <p class="fh">Get access</p>
                 <div class="form-grid">
                     <div class="form-field">
-                        <label for="name" class="form-l">Name</label>
+                        <label for="name" class="form-l">Name*</label>
                         <input id="name" name="name" type="text" required>
                     </div>
                     <div class="form-field">
-                        <label for="phone" class="form-l">Phone</label>
-                        <input id="phone" type="tel">
+                        <label for="phone" class="form-l">Phone*</label>
+                        <input id="phone" type="tel" required>
                     </div>
                     <div class="form-field">
-                        <label for="email" class="form-l">Email</label>
-                        <input id="email" name="email_from" type="email">
+                        <label for="email" class="form-l">Email*</label>
+                        <input id="email" name="email_from" type="email" required>
                     </div>
                     <div class="form-field">
                         <label for="city" class="form-l">City</label>
                         <input id="city" name="city" type="text">
                     </div>
                     <div class="form-field">
-                        <label for="company" class="form-l">Company</label>
-                        <input id="company" name="partner_name" type="text">
+                        <label for="company" class="form-l">Company*</label>
+                        <input id="company" name="partner_name" type="text" required>
                     </div>
                     <div class="form-field">
-                        <label for="subject" class="form-l">Subject</label>
-                        <input id="subject" name="subject" type="text">
+                        <label for="subject" class="form-l">Subject*</label>
+                        <input id="subject" name="subject" type="text" required>
                     </div>
                     <div class="form-field textarea">
                         <label style="display: none" for="description" class="form-l"></label>
-                        <textarea id="description" name="description" placeholder="What do you want to talk about"></textarea>
+                        <textarea id="description" name="description" required placeholder="What do you want to talk about*"></textarea>
                     </div>
                     <div id="message">Lead creado con ID</div>
                 </div>
@@ -1698,19 +1784,7 @@
                     /></label>
                 </div>
                 <div class="form-actions">
-                    <button class="btn dark" type="submit" id="submitBtn">Request access
-                    </button
-                    >
-                    <a
-                            class="btn ghost"
-                            id="mailFallback"
-                            href="mailto:contact@playbex.com"
-                            style="display: none; color: var(--on-cream); border-color: var(--line-cream)"
-                    >Email Playbex</a
-                    >
-                </div>
-                <div class="success" id="success" role="status">
-                    Thanks - we'll send your data room access shortly.
+                    <button class="btn dark" type="submit" id="submitBtn">Request access</button>
                 </div>
                 <div class="error" id="error" role="alert">
                     We couldn't send your request - please try again, or email us using the button.
@@ -1740,6 +1814,17 @@
         </div>
     </div>
 </footer>
+<div class="popup-overlay" id="successPopup">
+    <div class="popup-box">
+        <svg class="checkmark-circle" viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="36" cy="36" r="33"/>
+            <path d="M20 37l11 11 21-21"/>
+        </svg>
+        <p class="popup-title">Request sent!</p>
+        <p class="popup-text">Thanks — we'll send your data room access shortly.</p>
+        <button class="popup-close" id="popupClose">Got it</button>
+    </div>
+</div>
 <noscript
 >
     <div
@@ -1776,50 +1861,45 @@
   document.getElementById('contactForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const form = e.target;
-    const submitBtn  = document.getElementById('submitBtn');
-    const successEl  = document.getElementById('success');
-    const errorEl    = document.getElementById('error');
-    const messageEl  = document.getElementById('message');
+    const form        = e.target;
+    const submitBtn   = document.getElementById('submitBtn');
+    const successEl   = document.getElementById('success');
+    const errorEl     = document.getElementById('error');
+
+    if (form.querySelector('[name="company_url"]').value) return;
 
     successEl.style.display = 'none';
     errorEl.style.display   = 'none';
-    messageEl.style.display = 'none';
 
     const nameInput    = document.getElementById('name');
     const emailInput   = document.getElementById('email');
+    const subjectInput = document.getElementById('subject');
     const consentInput = document.getElementById('consent');
+    const consentLabel = consentInput.closest('label');
+
     let valid = true;
 
-    if (!nameInput.value.trim()) {
-      nameInput.style.outline = '2px solid red';
-      nameInput.focus();
-      valid = false;
-    } else {
-      nameInput.style.outline = '';
+    function mark(el, isValid) {
+      el.style.outline = isValid ? '' : '2px solid red';
     }
 
-    if (!emailInput.value.trim() || !emailInput.validity.valid) {
-      emailInput.style.outline = '2px solid red';
-      if (valid) emailInput.focus();
-      valid = false;
-    } else {
-      emailInput.style.outline = '';
-    }
+    const nameOk    = nameInput.value.trim() !== '';
+    const emailOk   = emailInput.value.trim() !== '' && emailInput.value.includes('@');
+    const subjectOk = subjectInput.value.trim() !== '';
+    const consentOk = consentInput.checked;
 
-    if (!consentInput.checked) {
-      consentInput.closest('label').style.outline = '2px solid red';
-      valid = false;
-    } else {
-      consentInput.closest('label').style.outline = '';
-    }
+    mark(nameInput, nameOk);
+    mark(emailInput, emailOk);
+    mark(subjectInput, subjectOk);
+    if (consentLabel) consentLabel.style.outline = consentOk ? '' : '2px solid red';
 
+    if (!nameOk)    { nameInput.focus();    valid = false; }
+    else if (!emailOk)   { emailInput.focus();   valid = false; }
+    else if (!subjectOk) { subjectInput.focus(); valid = false; }
+
+    if (!consentOk) valid = false;
     if (!valid) return;
 
-    // --- honeypot ---
-    if (form.querySelector('[name="company_url"]').value) return;
-
-    // --- payload ---
     const payload = {
       access_key:      'b4b2d8ee-166d-4ede-bc76-7e9c90cb8b8c',
       subject:         'New Playbex lead',
@@ -1828,7 +1908,7 @@
       phone:           document.getElementById('phone').value.trim(),
       city:            document.getElementById('city').value.trim(),
       company:         document.getElementById('company').value.trim(),
-      inquiry_subject: document.getElementById('subject').value.trim(),
+      inquiry_subject: subjectInput.value.trim(),
       description:     document.getElementById('description').value.trim(),
       consent:         true,
       page_url:        location.href,
@@ -1836,8 +1916,9 @@
       submitted_at:    new Date().toISOString(),
     };
 
-    submitBtn.disabled    = true;
-    submitBtn.textContent = 'Sending…';
+    submitBtn.dataset.originalText = submitBtn.textContent;
+    submitBtn.disabled             = true;
+    submitBtn.textContent          = 'Sending…';
 
     try {
       const res  = await fetch('https://api.web3forms.com/submit', {
@@ -1848,18 +1929,25 @@
       const json = await res.json();
 
       if (res.ok && json.success) {
-        successEl.style.display = 'block';
         form.reset();
+        mark(nameInput, true);
+        mark(emailInput, true);
+        mark(subjectInput, true);
+        if (consentLabel) consentLabel.style.outline = '';
+
+        const popup = document.getElementById('successPopup');
+        popup.classList.add('show');
+
+        setTimeout(() => popup.classList.remove('show'), 3000);
       } else {
-        throw new Error(json.message || 'Submit failed');
+        throw new Error(json.message || 'API error');
       }
     } catch (err) {
       console.error(err);
       errorEl.style.display = 'block';
-      document.getElementById('mailFallback').style.display = 'inline-flex';
     } finally {
       submitBtn.disabled    = false;
-      submitBtn.textContent = 'Request access';
+      submitBtn.textContent = submitBtn.dataset.originalText;
     }
   });
 </script>
